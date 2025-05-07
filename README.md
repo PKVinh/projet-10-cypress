@@ -25,7 +25,7 @@ baseUrl: "http://localhost:8080" //Lien du site
 
 # Lancer la campagne de tests
 
-1. Depuis un terminal ouvert dans le dossier du projet, lancer la commande : `npm install --save-dev mochawesome`
+1. Depuis un terminal ouvert dans le dossier du projet, lancer la commande : `npm i --save-dev cypress-mochawesome-reporter`
 
 2. Dans le fichier cypress.config.js dans defineConfig, ajouter les lignes : 
 
