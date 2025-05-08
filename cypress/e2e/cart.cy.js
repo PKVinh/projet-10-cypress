@@ -25,21 +25,26 @@ describe('Order Placement Test', () => {
     let orderAmount = 1;
     let id = 3;
     let initialStock // Stock du produit avant ajout au panier
-    let finalStock // Stock du produit après ajout au panier
 
     cy.intercept('GET', `${Cypress.env('apiUrl')}/products/${id}`).as('getProduct');
     cy.visit(`${Cypress.env('baseUrl')}/#/products/${id}`);
+    // Récupération du stock
+    cy.request({
+      method: 'GET',
+      url: `${Cypress.env('apiUrl')}/products/${id}`, // adapte avec l'ID de ton produit
+      headers: {
+        Authorization: `Bearer ${window.localStorage.getItem('token')}`
+        }
+      })
+      .then((response) => {
+      expect(response.status).to.eq(200);
+    
+      // Supposons que la réponse ressemble à : { id: 123, name: "...", stock: 8 }
+      initialStock = response.body.availableStock;
+      cy.log(`Stock initial (via API) : ${initialStock}`);
+    });
     cy.wait('@getProduct'); // Pour laisser le stock s'afficher
 
-    // Récupération du stock
-    cy.get('[data-cy="detail-product-stock"]') 
-      .invoke('text')
-      .then((text) => {
-        const match = text.match(/-?\d+/);
-        initialStock = match ? parseInt(match[0], 10) : null;   
-        cy.log(initialStock)
-      })
-  
     cy.get('[data-cy="detail-product-quantity"]').clear().type(orderAmount);
     cy.get('[data-cy="detail-product-add"]').click();
     
@@ -57,40 +62,29 @@ describe('Order Placement Test', () => {
 
     cy.intercept('GET', `${Cypress.env('apiUrl')}/products/${id}`).as('getProductAfterAdd');
     cy.visit(`${Cypress.env('baseUrl')}/#/products/${id}`);
+    cy.request({
+      method: 'GET',
+      url: `${Cypress.env('apiUrl')}/products/${id}`, // adapte avec l'ID de ton produit
+      headers: {
+        Authorization: `Bearer ${window.localStorage.getItem('token')}`
+        }    
+      }).then((response) => {
+      const finalStock = response.body.availableStock;
+      cy.log(`Stock après ajout : ${finalStock}`);
+      expect(finalStock).to.eq(initialStock - 1);
+    });
     cy.wait('@getProductAfterAdd');
 
-    cy.get('[data-cy="detail-product-stock"]')
-    .invoke('text')
-    .then((text) => {
-      const finalMatch = text.match(/-?\d+/); // extrait le premier nombre trouvé
-      finalStock = finalMatch ? parseFloat(finalMatch[0], 10) : null;  
-      cy.log(finalStock)
-      expect(finalStock).to.equal(initialStock - orderAmount);
-    });
-
-    //Vide le panier
+    // Vide le panier
     cy.intercept('GET', `${Cypress.env('apiUrl')}/orders`).as('getOrders');
-    cy.visit(`${Cypress.env('baseUrl')}/#/cart`); 
+      cy.visit(`${Cypress.env('baseUrl')}/#/cart`); 
     cy.wait('@getOrders');
 
-    cy.intercept('DELETE', `${Cypress.env('apiUrl')}/orders/${id}/delete`).as('deleteOrders');
     cy.get('[data-cy="cart-line-delete"]').each((trashBtn) => {
       cy.wrap(trashBtn).click();
     });
-    cy.wait('@deleteOrders');
-    
-    cy.get('[data-cy="cart-line-delete"]').should('not.exist')
+    cy.get('[data-cy="cart-line"]').should('not.exist')
   });
-
-  // it('should remove a product to the cart', () => {
-  //   cy.visit(`${Cypress.env('baseUrl')}/#/cart`);
-  //   cy.get('[data-cy="cart-line-delete"]').first().click();
-
-  //   cy.get('[data-cy="cart-line-image"]').should('not.exist')
-  //   cy.get('[data-cy="cart-line-name"]').should('not.exist')
-  //   cy.get('[data-cy="cart-line-quantity"]').should('not.exist')
-  //   cy.get('[data-cy="cart-line-total"]').should('not.exist')
-  // });
 
   it('should NOT add a out of stock product', () => {
     let outOfStockProduct = 3; //ID d'un produit en rupture
