@@ -40,10 +40,10 @@ baseUrl: "http://localhost:8080" //Lien du site
 ```
 reporter: "cypress-mochawesome-reporter",
 reporterOptions: {
-reportDir: "cypress/reports/mochawesome",
-overwrite: false,
-html: false,
-json: true
+    reportDir: "cypress/reports/mochawesome",
+    overwrite: false,
+    html: false,
+    json: true
 }
 ```
 
