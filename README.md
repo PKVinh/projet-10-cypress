@@ -6,6 +6,7 @@
 3. Ouvrez le site depuis la page http://localhost:8080 
 
 # Installation / Configuration de Cypress
+
 1. Depuis un terminal ouvert dans le dossier du projet, lancer la commande : `npm install cypress --save-dev`
 
 2. Dans le même terminal, lancer la commande : `npx cypress open`
@@ -16,7 +17,9 @@
 
 5. Dans le fichier `cypress.config.js`, dans e2e, écrire 
 
+```
 baseUrl: "http://localhost:8080/"
+```
 
 6. Dans le même fichier, dans defineConfig mais en dehors de e2e, écrire
 
@@ -29,10 +32,12 @@ baseUrl: "http://localhost:8080" //Lien du site
 
 # Lancer la campagne de tests
 
-1. Depuis un terminal ouvert dans le dossier du projet, lancer la commande : `npm i --save-dev cypress-mochawesome-reporter`
+1. Depuis un terminal ouvert dans le dossier du projet, lancer la commande 
+`npm i --save-dev cypress-mochawesome-reporter`
 
 2. Dans le fichier cypress.config.js dans defineConfig, ajouter les lignes : 
 
+```
 reporter: "cypress-mochawesome-reporter",
 reporterOptions: {
 reportDir: "cypress/reports/mochawesome",
@@ -40,8 +45,10 @@ overwrite: false,
 html: false,
 json: true
 }
+```
 
-3. Dans le fichier cypress.config.js dans setupNodeEvents(on, config), ajouter la ligne : `require("cypress-mochawesome-reporter/plugin")(on)`
+3. Dans le fichier cypress.config.js dans setupNodeEvents(on, config), ajouter la ligne
+`require("cypress-mochawesome-reporter/plugin")(on)`
 
 4. Depuis un terminal ouvert dans le dossier du projet, lancer la commande : `npx cypress run`
 
