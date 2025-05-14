@@ -20,10 +20,12 @@ baseUrl: "http://localhost:8080/"
 
 6. Dans le même fichier, dans defineConfig mais en dehors de e2e, écrire
 
-> env: {
-> apiUrl: "http://localhost:8081", //Lien de l'API
-> baseUrl: "http://localhost:8080" //Lien du site
-> }
+```
+env: {
+apiUrl: "http://localhost:8081", //Lien de l'API
+baseUrl: "http://localhost:8080" //Lien du site
+}
+```
 
 # Lancer la campagne de tests
 
